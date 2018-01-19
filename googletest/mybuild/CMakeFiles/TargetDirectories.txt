@@ -1,0 +1,4 @@
+/cygdrive/d/Workspaces/googletest/googletest/mybuild/CMakeFiles/rebuild_cache.dir
+/cygdrive/d/Workspaces/googletest/googletest/mybuild/CMakeFiles/edit_cache.dir
+/cygdrive/d/Workspaces/googletest/googletest/mybuild/CMakeFiles/gtest_main.dir
+/cygdrive/d/Workspaces/googletest/googletest/mybuild/CMakeFiles/gtest.dir

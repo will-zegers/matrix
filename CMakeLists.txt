@@ -3,4 +3,5 @@ project(matrix)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(matrix main.cpp matrix.cpp matrix.h)
+add_subdirectory(googletest)
+add_executable(matrix main.cpp matrix.cpp matrix.h main.cpp)
