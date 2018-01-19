@@ -61,6 +61,11 @@ std::vector<T>& Matrix<T>::operator[](size_t i) {
 }
 
 template<class T>
+T Matrix<T>::at(size_t i, size_t j) const {
+    return elements[i][j];
+}
+
+template<class T>
 void Matrix<T>::setShape() {
     _shape = std::vector<size_t>(2);
     _shape[0] = elements.size();
@@ -73,13 +78,13 @@ static std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
 }
 
 template<class T>
-static Matrix<T> operator*(Matrix<T>& m1, Matrix<T>& m2) {
+static Matrix<T> operator*(const Matrix<T>& m1, const Matrix<T>& m2) {
     assert(!(m1.isEmpty() || m1.isEmpty()));
     assert(m1.shape(1) == m2.shape(0));
     Matrix<T> res(m1.shape(0), m2.shape(1));
     for (size_t i = 0; i < m1.shape(0); ++i)
         for (size_t k = 0; k < m2.shape(1); ++k)
             for (size_t j = 0; j < m1.shape(1); ++j)
-                res[i][k] += m1[i][j] * m2[j][k];
+                res[i][k] += m1.at(i, j) * m2.at(j, k);
     return res;
 }

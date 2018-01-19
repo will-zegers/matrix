@@ -17,6 +17,8 @@ public:
     Matrix transpose() const;
     std::string toString() const;
     size_t shape(size_t) const;
+    T at(size_t, size_t) const;
+
     std::vector<T>& operator[](size_t);
 
 private:
@@ -30,6 +32,6 @@ template<class T>
 static std::ostream& operator<<(std::ostream&, const Matrix<T>&);
 
 template<class T>
-static Matrix<T> operator*(Matrix<T>&, Matrix<T>&);
+static Matrix<T> operator*(const Matrix<T>&, const Matrix<T>&);
 
 #endif //MATRIX_MATRIX_H
