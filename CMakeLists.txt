@@ -7,9 +7,10 @@ include_directories(src)
 include_directories(googletest/include googletest)
 
 add_subdirectory(src)
-add_subdirectory(tests/googletest)
+add_subdirectory(test/googletest)
 
 add_executable(main main.cpp)
+#target_link_libraries(main src)
 
-add_executable(matrixTest tests/matrixTest.cpp)
+add_executable(matrixTest test/matrixTest.cpp)
 target_link_libraries(matrixTest gtest gtest_main)

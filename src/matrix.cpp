@@ -19,7 +19,7 @@ Matrix<T>::Matrix() : Matrix<T>::Matrix(std::vector<std::vector<T> >()) {}
 
 template<class T>
 bool Matrix<T>::isEmpty() const {
-    return elements.begin() == elements.end();
+    return elements.empty();
 }
 
 template<class T>
@@ -69,11 +69,6 @@ void Matrix<T>::setShape() {
 }
 
 template<class T>
-static std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
-    return os << m.toString();
-}
-
-template<class T>
 static Matrix<T> operator*(const Matrix<T>& m1, const Matrix<T>& m2) {
     assert(!(m1.isEmpty() || m1.isEmpty()));
     assert(m1.shape(1) == m2.shape(0));
@@ -83,4 +78,9 @@ static Matrix<T> operator*(const Matrix<T>& m1, const Matrix<T>& m2) {
             for (size_t j = 0; j < m1.shape(1); ++j)
                 res[i][k] += m1.at(i, j) * m2.at(j, k);
     return res;
+}
+
+template<class T>
+static std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
+    return os << m.toString();
 }
