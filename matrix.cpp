@@ -15,7 +15,7 @@ Matrix<T>::Matrix(size_t n_rows, size_t n_cols) :
                 std::vector<T>(n_cols))) {}
 
 template<class T>
-Matrix<T>::Matrix() : elements(std::vector<std::vector<T> >()) {}
+Matrix<T>::Matrix() : Matrix<T>::Matrix(std::vector<std::vector<T> >()) {}
 
 template<class T>
 bool Matrix<T>::isEmpty() const {
@@ -62,8 +62,10 @@ T Matrix<T>::at(size_t i, size_t j) const {
 template<class T>
 void Matrix<T>::setShape() {
     _shape = std::vector<size_t>(2);
-    _shape[0] = elements.size();
-    _shape[1] = elements[0].size();
+    if (!isEmpty()) {
+        _shape[0] = elements.size();
+        _shape[1] = elements[0].size();
+    }
 }
 
 template<class T>

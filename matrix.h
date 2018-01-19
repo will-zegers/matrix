@@ -9,7 +9,6 @@ template<class T>
 class Matrix {
 public:
     explicit Matrix(std::vector<std::vector<T> >);
-    explicit Matrix(std::vector<T>);
     Matrix(size_t, size_t);
     Matrix();
 
