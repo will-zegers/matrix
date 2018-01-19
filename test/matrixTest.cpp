@@ -1,12 +1,11 @@
 #include "matrix.h"
-#include "matrix.cpp"
 #include <gtest/gtest.h>
 
 TEST(Insantiate_Matrix, Empty) {
     Matrix<int> m;
     EXPECT_EQ(m.shape(0), 0);
     EXPECT_EQ(m.shape(1), 0);
-    ASSERT_EXIT((m.at(0, 0)),::testing::KilledBySignal(SIGSEGV),".*");
+    ASSERT_EXIT((m[0][0]),::testing::KilledBySignal(SIGSEGV),".*");
 }
 
 TEST(Instantiate_Matrix, Zero) {
