@@ -9,23 +9,17 @@ Matrix<T>::Matrix(std::vector<std::vector<T> > _elements) : elements(_elements) 
 }
 
 template<class T>
-Matrix<T>::Matrix(std::vector<T> _elements) :
-        Matrix<T>::Matrix(std::vector<std::vector<T> >(
-                1,
-                std::vector<T>(_elements.begin(), _elements.end()))) {}
-
-template<class T>
 Matrix<T>::Matrix(size_t n_rows, size_t n_cols) :
         Matrix<T>::Matrix(std::vector<std::vector<T> >(
                 n_rows,
                 std::vector<T>(n_cols))) {}
 
 template<class T>
-Matrix<T>::Matrix() : Matrix<T>::Matrix(0, 0) {}
+Matrix<T>::Matrix() : elements(std::vector<std::vector<T> >()) {}
 
 template<class T>
 bool Matrix<T>::isEmpty() const {
-    return (_shape[0] == 0) && (_shape[1] == 0);
+    return elements.begin() == elements.end();
 }
 
 template<class T>
