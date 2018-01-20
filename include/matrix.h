@@ -50,10 +50,9 @@ public:
             throw empty_matrix();
 
         Matrix<T> mT(_shape[1], _shape[0]);
-        for (mat_size_t i = 0; i < _shape[1]; ++i) {
+        for (mat_size_t i = 0; i < _shape[1]; ++i)
             for (mat_size_t j = 0; j < _shape[0]; ++j)
                 mT[i][j] = elements[j][i];
-        }
 
         return mT;
     }
@@ -61,7 +60,7 @@ public:
     virtual Matrix<T> operator*(Matrix<T>& m) const {
         if (empty() || m.empty())
             throw empty_matrix();
-        if (this->_shape[1] != m.shape(0))
+        if (_shape[1] != m.shape(0))
             throw size_mismatch();
 
         Matrix<T> res(_shape[0], m.shape(1));

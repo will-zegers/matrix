@@ -1,7 +1,3 @@
-//
-// Created by will on 1/19/2018.
-//
-
 #include "naiveMatrix.h"
 #include "matrix.h"
 #include <gtest/gtest.h>
@@ -38,6 +34,7 @@ namespace {
         void reroll() {
             dim1 = static_cast<mat_size_t>(udistDim2(generator));
             dim2 = static_cast<mat_size_t>(udistDim1(generator));
+            dim3 = static_cast<mat_size_t>(udistDim3(generator));
         }
 
         template <typename T>

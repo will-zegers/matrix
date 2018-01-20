@@ -21,7 +21,7 @@ namespace {
             udistC = std::uniform_int_distribution<>(1, MAX_COLS);
             n_rows = static_cast<mat_size_t>(udistR(generator));
             n_cols = static_cast<mat_size_t>(udistC(generator));
-    }
+        }
     };
 
     TEST_F(MatrixInstantiation, Empty) {

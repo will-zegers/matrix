@@ -15,10 +15,9 @@ public:
             throw empty_matrix();
 
         Matrix<T> mT(this->_shape[1], this->_shape[0]);
-        for (mat_size_t i = 0; i < this->_shape[1]; ++i) {
+        for (mat_size_t i = 0; i < this->_shape[1]; ++i)
             for (mat_size_t j = 0; j < this->_shape[0]; ++j)
                 mT[i][j] = this->elements[j][i];
-        }
 
         return mT;
     }
