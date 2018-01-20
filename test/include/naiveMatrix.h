@@ -9,6 +9,7 @@ public:
 
     typedef std::vector<std::vector<T> > vector2D;
 
+    NaiveMatrix() : Matrix<T>() {}
     explicit NaiveMatrix(vector2D _elements) : Matrix<T>(_elements) {}
     explicit NaiveMatrix(Matrix<T>& mat) : Matrix<T>(vector2D(mat.begin(), mat.end())) {}
 

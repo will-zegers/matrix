@@ -28,23 +28,22 @@ namespace {
             dim1 = static_cast<mat_size_t>(uniformDim1(generator));
             dim2 = static_cast<mat_size_t>(uniformDim2(generator));
         }
-        template <typename T>
-        Matrix<T> randomMatrix() {
-            Matrix<T> m(dim1, dim2);
+
+        Matrix<data_t> randomMatrix() {
+            Matrix<data_t> m(dim1, dim2);
             for (int i = 0; i < dim1; ++i)
                 for (int j = 0; j < dim2; ++j)
                     m[i][j] = uniformData(generator);
             return m;
         }
 
-        template <typename T>
-        Matrix<T> randomSymmetricMatrix() {
+        Matrix<data_t> randomSymmetricMatrix() {
             mat_size_t dimn = std::min(dim2, dim1);
-            Matrix<T> m(dimn, dimn);
+            Matrix<data_t> m(dimn, dimn);
             for (mat_size_t i = 0; i < dimn; ++i) {
-                m[i][i] = static_cast<T>(uniformData(generator));
+                m[i][i] = static_cast<data_t>(uniformData(generator));
                 for (mat_size_t j = i + 1; j < dimn; ++j) {
-                    auto elem = static_cast<T>(uniformData(generator));
+                    auto elem = static_cast<data_t>(uniformData(generator));
                     m[i][j] = elem;
                     m[j][i] = elem;
                 }
@@ -65,19 +64,19 @@ namespace {
     }
 
     TEST_F(TransposeTest, Transpose_Swaps_Dimensions) {
-        Matrix<data_t> m = randomMatrix<data_t>();
+        Matrix<data_t> m = randomMatrix();
         Matrix<data_t> mT = m.transpose();
         EXPECT_EQ(m.shape(0), mT.shape(1));
         EXPECT_EQ(m.shape(1), mT.shape(0));
     }
 
     TEST_F(TransposeTest, Sym_Matrix_Transpose_Is_Itself) {
-        Matrix<data_t> m = randomSymmetricMatrix<data_t>();
+        Matrix<data_t> m = randomSymmetricMatrix();
         EXPECT_EQ(m, m.transpose());
     }
 
     TEST_F(TransposeTest, Transpose_Implementation_Equals_Naive) {
-        Matrix<data_t> mat  = randomMatrix<data_t>();
+        Matrix<data_t> mat  = randomMatrix();
         NaiveMatrix<data_t> naive(mat);
         EXPECT_EQ(naive.transpose(), mat.transpose());
     }

@@ -14,6 +14,7 @@ add_executable(main main.cpp include/matrix.h)
 add_executable(
         testAll
         test/include/naiveMatrix.h
+        test/performanceTest.cpp
         test/transposeTest.cpp
         test/matMulTest.cpp
         test/instantiationTest.cpp)
