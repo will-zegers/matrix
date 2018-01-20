@@ -7,12 +7,14 @@ template <typename T>
 class NaiveMatrix : public Matrix<T> {
 public:
 
-    explicit NaiveMatrix(std::vector<std::vector<int> > _elements) : Matrix<T>(_elements) {}
-    explicit NaiveMatrix(Matrix<T> mat) : Matrix<T>(mat.all()) {}
+    typedef std::vector<std::vector<T> > vector2D;
+
+    explicit NaiveMatrix(vector2D _elements) : Matrix<T>(_elements) {}
+    explicit NaiveMatrix(Matrix<T>& mat) : Matrix<T>(vector2D(mat.begin(), mat.end())) {}
 
     Matrix<T> transpose() const {
         if (this->empty())
-            throw empty_matrix();
+            throw typename Matrix<T>::empty_matrix();
 
         Matrix<T> mT(this->_shape[1], this->_shape[0]);
         for (mat_size_t i = 0; i < this->_shape[1]; ++i)
@@ -24,9 +26,9 @@ public:
 
     Matrix<T> operator*(NaiveMatrix& m) const {
         if (this->empty() || m.empty())
-            throw empty_matrix();
+            throw typename Matrix<T>::empty_matrix();
         if (this->_shape[1] != m.shape(0))
-            throw size_mismatch();
+            throw typename Matrix<T>::size_mismatch();
 
         Matrix<T> res(this->_shape[0], m.shape(1));
         for (mat_size_t i = 0; i < this->_shape[0]; ++i)
@@ -35,18 +37,6 @@ public:
                     res[i][k] += this->elements[i][j] * m[j][k];
         return res;
     }
-
-    struct empty_matrix : public std::exception {
-        const char* what () const throw() {
-            return "Cannot perform operation on empty matrices";
-        }
-    };
-
-    struct size_mismatch : public std::exception {
-        const char* what () const throw() {
-            return "Incompatible matrix dimensions";
-        }
-    };
 };
 
 #endif //INCLUDE_NAIVEMATRIX_H

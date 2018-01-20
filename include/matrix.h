@@ -14,17 +14,29 @@ typedef uint32_t mat_size_t;
 template <typename T>
 class Matrix {
 public:
-    explicit Matrix(std::vector<std::vector<T> > _elements) : elements(_elements) {
+    typedef std::vector<std::vector<T> > vector2D;
+
+    explicit Matrix(vector2D _elements) : elements(_elements) {
         setShape();
     };
 
     Matrix(mat_size_t n_rows, mat_size_t n_cols) :
-            Matrix(std::vector<std::vector<T> >(n_rows, std::vector<T>(n_cols))) {}
+            Matrix(vector2D(n_rows, std::vector<T>(n_cols))) {}
 
-    Matrix() : Matrix(std::vector<std::vector<T> >()) {}
+    Matrix() : Matrix(vector2D()) {}
 
     bool empty() const {
         return elements.empty();
+    }
+
+    typename
+    vector2D::iterator begin() {
+        return elements.begin();
+    }
+
+    typename
+    vector2D::iterator end() {
+        return elements.end();
     }
 
     std::string to_string() const {
@@ -37,6 +49,14 @@ public:
         return ss.str();
     }
 
+    std::vector<T> at(mat_size_t i) const {
+        return elements[i];
+    }
+
+    T at(mat_size_t i, mat_size_t j) const {
+        return elements[i][j];
+    }
+
     mat_size_t shape(mat_size_t i) const {
         return _shape[i];
     }
@@ -45,7 +65,7 @@ public:
         return elements[i];
     }
 
-    virtual Matrix transpose() const {
+    virtual Matrix transpose() {
         if (empty())
             throw empty_matrix();
 
@@ -72,27 +92,29 @@ public:
     }
 
     bool operator==(const Matrix& m) const {
-        return m.all() == elements;
-    }
+        if (_shape[0] != m.shape(0) || _shape[1] != m.shape(1))
+            return false;
 
-    std::vector<std::vector<T> > all() const {
-        return elements;
+        for (mat_size_t i = 0; i < _shape[0]; ++i)
+            if (elements.at(i) != m.at(i))
+                return false;
+        return true;
     }
 
     struct empty_matrix : public std::exception {
-        const char* what () const throw() {
+        const char* what () const throw() final {
             return "Cannot perform operation on empty matrices";
         }
     };
 
     struct size_mismatch : public std::exception {
-        const char* what () const throw() {
+        const char* what () const throw() final {
             return "Incompatible matrix dimensions";
         }
     };
 
 protected:
-    std::vector<std::vector<T> > elements;
+    vector2D elements;
     std::vector<mat_size_t> _shape;
 
     void setShape() {

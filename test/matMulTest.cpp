@@ -8,10 +8,13 @@ namespace {
     class MatMulTest : public ::testing::Test {
 
     protected:
-        int MAX_DIM1 = 100;
-        int MAX_DIM2 = 100;
-        int MAX_DIM3 = 100;
-        int MAX_ELEM = 10000;
+        typedef long data_t;
+
+        const int MAX_DIM1 = 100;
+        const int MAX_DIM2 = 100;
+        const int MAX_DIM3 = 100;
+        const int MAX_ELEM = 10000;
+
         mat_size_t dim1, dim2, dim3;
 
         std::default_random_engine generator;
@@ -39,40 +42,40 @@ namespace {
 
         template <typename T>
         Matrix<T> randomMatrix(mat_size_t n_rows, mat_size_t n_cols) {
-            Matrix<T> m = Matrix<T>(n_rows, n_cols);
-            for (int i = 0; i < n_rows; ++i)
-                for (int j = 0; j < n_cols; ++j)
+            Matrix<T> m(n_rows, n_cols);
+            for (mat_size_t i = 0; i < n_rows; ++i)
+                for (mat_size_t j = 0; j < n_cols; ++j)
                     m[i][j] = udistE(generator);
             return m;
         }
     };
 
     TEST_F(MatMulTest, Empty_Times_Empty_Throws_Empty_Mat_Ex) {
-        Matrix<int> m1, m2;
-        EXPECT_THROW(m1 * m2, Matrix<int>::empty_matrix);
+        Matrix<data_t> m1, m2;
+        EXPECT_THROW(m1 * m2, Matrix<data_t>::empty_matrix);
     }
 
     TEST_F(MatMulTest, Non_empty_Times_Empty_Throws_Empty_Mat_Ex) {
-        Matrix<int> m1 = randomMatrix<int>(dim1, dim2);
-        Matrix<int> m2;
-        EXPECT_THROW(m1 * m2, Matrix<int>::empty_matrix);
+        Matrix<data_t> m1 = randomMatrix<data_t>(dim1, dim2);
+        Matrix<data_t> m2;
+        EXPECT_THROW(m1 * m2, Matrix<data_t>::empty_matrix);
     }
 
     TEST_F(MatMulTest, Mats_with_Different_Dimensions_Throws_Size_Ex) {
-        Matrix<int> m1 = randomMatrix<int>(dim1, dim2);
-        Matrix<int> m2 = randomMatrix<int>(dim3, dim1);
+        Matrix<data_t> m1 = randomMatrix<data_t>(dim1, dim2);
+        Matrix<data_t> m2 = randomMatrix<data_t>(dim3, dim1);
         while (m1.shape(1) == m2.shape(0)) {
             reroll();
-            m2 = randomMatrix<int>(dim1, dim2);
+            m2 = randomMatrix<data_t>(dim1, dim2);
         }
-        EXPECT_THROW(m1 * m2, Matrix<int>::size_mismatch);
+        EXPECT_THROW(m1 * m2, Matrix<data_t>::size_mismatch);
     }
 
     TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive) {
-        Matrix<long> mat1 = randomMatrix<long>(dim1, dim2);
-        Matrix<long> mat2 = randomMatrix<long>(dim2, dim3);
-        NaiveMatrix<long> naive1 = NaiveMatrix<long>(mat1);
-        NaiveMatrix<long> naive2 = NaiveMatrix<long>(mat2);
+        Matrix<data_t> mat1 = randomMatrix<data_t>(dim1, dim2);
+        Matrix<data_t> mat2 = randomMatrix<data_t>(dim2, dim3);
+        NaiveMatrix<data_t> naive1(mat1);
+        NaiveMatrix<data_t> naive2(mat2);
         EXPECT_EQ(mat1 * mat2, naive1 * naive2);
     }
 }
