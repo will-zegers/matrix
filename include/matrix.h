@@ -16,28 +16,26 @@ class Matrix {
 public:
     typedef std::vector<std::vector<T> > vector2D;
 
-    explicit Matrix(vector2D _elements) : elements(_elements) {
-        setShape();
-    };
+    Matrix() : Matrix(vector2D()) {}
 
     Matrix(mat_size_t n_rows, mat_size_t n_cols) :
             Matrix(vector2D(n_rows, std::vector<T>(n_cols))) {}
 
-    Matrix() : Matrix(vector2D()) {}
-
-    bool empty() const {
-        return elements.empty();
-    }
+    explicit Matrix(vector2D _elements) : elements(_elements) { setShape(); };
 
     typename
-    vector2D::iterator begin() {
-        return elements.begin();
-    }
+    vector2D::iterator begin() { return elements.begin(); }
 
     typename
-    vector2D::iterator end() {
-        return elements.end();
-    }
+    vector2D::iterator end() { return elements.end(); }
+
+    bool empty() const { return elements.empty(); }
+
+    mat_size_t shape(mat_size_t i) const { return _shape[i]; }
+
+    std::vector<T> at(mat_size_t i) const { return elements[i]; }
+
+    T at(mat_size_t i, mat_size_t j) const { return elements[i][j]; }
 
     std::string to_string() const {
         std::stringstream ss;
@@ -49,32 +47,16 @@ public:
         return ss.str();
     }
 
-    std::vector<T> at(mat_size_t i) const {
-        return elements[i];
-    }
+    std::vector<T>& operator[](mat_size_t i) { return elements[i]; }
 
-    T at(mat_size_t i, mat_size_t j) const {
-        return elements[i][j];
-    }
+    bool operator==(const Matrix& m) const {
+        if (_shape[0] != m.shape(0) || _shape[1] != m.shape(1))
+            return false;
 
-    mat_size_t shape(mat_size_t i) const {
-        return _shape[i];
-    }
-
-    std::vector<T>& operator[](mat_size_t i) {
-        return elements[i];
-    }
-
-    virtual Matrix transpose() {
-        if (empty())
-            throw empty_matrix();
-
-        Matrix<T> mT(_shape[1], _shape[0]);
-        for (mat_size_t i = 0; i < _shape[1]; ++i)
-            for (mat_size_t j = 0; j < _shape[0]; ++j)
-                mT[i][j] = elements[j][i];
-
-        return mT;
+        for (mat_size_t i = 0; i < _shape[0]; ++i)
+            if (elements.at(i) != m.at(i))
+                return false;
+        return true;
     }
 
     virtual Matrix<T> operator*(Matrix<T>& m) const {
@@ -91,14 +73,16 @@ public:
         return res;
     }
 
-    bool operator==(const Matrix& m) const {
-        if (_shape[0] != m.shape(0) || _shape[1] != m.shape(1))
-            return false;
+    virtual Matrix transpose() {
+        if (empty())
+            throw empty_matrix();
 
-        for (mat_size_t i = 0; i < _shape[0]; ++i)
-            if (elements.at(i) != m.at(i))
-                return false;
-        return true;
+        Matrix<T> mT(_shape[1], _shape[0]);
+        for (mat_size_t i = 0; i < _shape[1]; ++i)
+            for (mat_size_t j = 0; j < _shape[0]; ++j)
+                mT[i][j] = elements[j][i];
+
+        return mT;
     }
 
     struct empty_matrix : public std::exception {
