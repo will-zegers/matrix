@@ -305,7 +305,7 @@ ValuesIn(ForwardIterator begin, ForwardIterator end) {
   typedef typename ::testing::internal::IteratorTraits<ForwardIterator>
       ::value_type ParamType;
   return internal::ParamGenerator<ParamType>(
-      new internal::ValuesInIteratorRangeGenerator<ParamType>(begin, end));
+      new internal::ValuesInIteratorRangeGenerator<ParamType>(cbegin, end));
 }
 
 template <typename T, size_t N>

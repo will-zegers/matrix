@@ -29,10 +29,10 @@ namespace {
         }
 
         Matrix<data_t> randomMatrix(mat_size_t dimn) {
-            Matrix<data_t> m(dimn, dimn);
+            Matrix<data_t> m = Matrix<data_t>(std::make_pair(dimn, dimn));
             for (mat_size_t i = 0; i < dimn; ++i)
                 for (mat_size_t j = 0; j < dimn; ++j)
-                    m[i][j] = uniformData(generator);
+                    m(i, j) = uniformData(generator);
             return m;
         }
 

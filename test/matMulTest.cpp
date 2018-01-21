@@ -40,10 +40,10 @@ namespace {
         }
 
         Matrix<data_t> randomMatrix(mat_size_t n_rows, mat_size_t n_cols) {
-            Matrix<data_t> m(n_rows, n_cols);
+            Matrix<data_t> m = Matrix<data_t>(std::make_pair(n_rows, n_cols));
             for (mat_size_t i = 0; i < n_rows; ++i)
                 for (mat_size_t j = 0; j < n_cols; ++j)
-                    m[i][j] = uniformData(generator);
+                    m(i, j) = uniformData(generator);
             return m;
         }
     };

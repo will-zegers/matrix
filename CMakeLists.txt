@@ -9,13 +9,11 @@ include_directories(googletest/include googletest)
 
 add_subdirectory(test/googletest)
 
-add_executable(main main.cpp include/matrix.h)
-
 add_executable(
         testAll
         test/include/naiveMatrix.h
         test/performanceTest.cpp
-        test/transposeTest.cpp
         test/matMulTest.cpp
+        test/transposeTest.cpp
         test/instantiationTest.cpp)
 target_link_libraries(testAll gtest gtest_main)

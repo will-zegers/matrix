@@ -7,35 +7,35 @@ template <typename T>
 class NaiveMatrix : public Matrix<T> {
 public:
 
-    typedef std::vector<std::vector<T> > vector2D;
-
     NaiveMatrix() : Matrix<T>() {}
-    explicit NaiveMatrix(vector2D _elements) : Matrix<T>(_elements) {}
-    explicit NaiveMatrix(Matrix<T>& mat) : Matrix<T>(vector2D(mat.begin(), mat.end())) {}
+    explicit NaiveMatrix(shape_t shape, std::vector<T> elements) :
+            Matrix<T>(shape, elements) {}
+    explicit NaiveMatrix(Matrix<T>& mat) :
+            Matrix<T>(std::make_pair(mat.shape(0), mat.shape(1)), std::vector<T>(mat.cbegin(), mat.cend())) {}
 
-    Matrix<T> transpose() const {
+    virtual Matrix<T> transpose() {
         if (this->empty())
             throw typename Matrix<T>::empty_matrix();
 
-        Matrix<T> mT(this->_shape[1], this->_shape[0]);
-        for (mat_size_t i = 0; i < this->_shape[1]; ++i)
-            for (mat_size_t j = 0; j < this->_shape[0]; ++j)
-                mT[i][j] = this->elements[j][i];
-
-        return mT;
+        Matrix<T> res = Matrix<T>(std::make_pair(this->n_cols, this->n_rows));
+        for (mat_size_t i = 0; i < this->n_rows; ++i)
+            for (mat_size_t j = 0; j < this->n_cols; ++j)
+                res(j, i) = this->elements[this->n_cols*i + j];
+        return res;
     }
 
-    Matrix<T> operator*(NaiveMatrix& m) const {
-        if (this->empty() || m.empty())
+    virtual Matrix<T> operator*(Matrix<T>& mat) {
+        if (this->empty() || mat.empty())
             throw typename Matrix<T>::empty_matrix();
-        if (this->_shape[1] != m.shape(0))
+        if (this->n_cols != mat.shape(0)) {
             throw typename Matrix<T>::size_mismatch();
+        }
 
-        Matrix<T> res(this->_shape[0], m.shape(1));
-        for (mat_size_t i = 0; i < this->_shape[0]; ++i)
-            for (mat_size_t k = 0; k < m.shape(1); ++k)
-                for (mat_size_t j = 0; j < this->_shape[1]; ++j)
-                    res[i][k] += this->elements[i][j] * m[j][k];
+        Matrix<T> res(std::make_pair(this->n_rows, mat.shape(1)));
+        for (mat_size_t i = 0; i < this->n_rows; ++i)
+            for (mat_size_t k = 0; k < mat.shape(1); ++k)
+                for (mat_size_t j = 0; j < this->n_cols; ++j)
+                    res(i, k) += this->elements[this->n_cols*i + j] * mat(j, k);
         return res;
     }
 };

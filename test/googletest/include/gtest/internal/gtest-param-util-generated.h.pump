@@ -212,7 +212,7 @@ $for j  || [[
     // current[i]_ is the actual traversing iterator.
 $for j [[
 
-    const typename ParamGenerator<T$j>::iterator begin$(j)_;
+    const typename ParamGenerator<T$j>::iterator cbegin$(j)_;
     const typename ParamGenerator<T$j>::iterator end$(j)_;
     typename ParamGenerator<T$j>::iterator current$(j)_;
 ]]

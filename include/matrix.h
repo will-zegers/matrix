@@ -1,118 +1,129 @@
 #ifndef MATRIX_MATRIX_H
 #define MATRIX_MATRIX_H
 
-#include <cstdlib>
 #include <vector>
-#include <string>
+#include <cstdint>
 #include <sstream>
-#include <cassert>
-#include <iostream>
-#include <exception>
+#include <tuple>
 
 typedef uint32_t mat_size_t;
+typedef std::tuple<mat_size_t, mat_size_t> shape_t;
 
 template <typename T>
 class Matrix {
 public:
-    typedef std::vector<std::vector<T> > vector2D;
+    Matrix() : n_rows(0), n_cols(0), elements(std::vector<T> ()) {}
+    Matrix(shape_t shape) :
+            n_rows(std::get<0>(shape)),
+            n_cols(std::get<1>(shape)),
+            elements(std::vector<T> (n_rows * n_cols)) {}
+    Matrix(shape_t shape, std::vector<T> elements) :
+            n_rows(std::get<0>(shape)),
+            n_cols(std::get<1>(shape)),
+            elements(elements) {}
 
-    Matrix() : Matrix(vector2D()) {}
-
-    Matrix(mat_size_t n_rows, mat_size_t n_cols) :
-            Matrix(vector2D(n_rows, std::vector<T>(n_cols))) {}
-
-    explicit Matrix(vector2D _elements) : elements(_elements) { setShape(); };
-
-    typename
-    vector2D::iterator begin() { return elements.begin(); }
-
-    typename
-    vector2D::iterator end() { return elements.end(); }
-
-    bool empty() const { return elements.empty(); }
-
-    mat_size_t shape(mat_size_t i) const { return _shape[i]; }
-
-    std::vector<T> at(mat_size_t i) const { return elements[i]; }
-
-    T at(mat_size_t i, mat_size_t j) const { return elements[i][j]; }
-
-    std::string to_string() const {
-        std::stringstream ss;
-        for (std::vector<T> row : elements) {
-            for (T elem : row)
-                ss << elem << '\t';
-            ss << '\n';
-        }
-        return ss.str();
+    T& operator()(mat_size_t i, mat_size_t j) {
+        if (i >= n_rows || j >= n_cols)
+            throw out_of_bounds();
+        return elements[i * n_cols + j];
     }
 
-    std::vector<T>& operator[](mat_size_t i) { return elements[i]; }
-
-    bool operator==(const Matrix& m) const {
-        if (_shape[0] != m.shape(0) || _shape[1] != m.shape(1))
-            return false;
-
-        for (mat_size_t i = 0; i < _shape[0]; ++i)
-            if (elements.at(i) != m.at(i))
-                return false;
-        return true;
+    typename std::vector<T>::const_iterator cbegin() const {
+        return elements.cbegin();
     }
 
-    virtual Matrix<T> operator*(Matrix<T>& m) const {
-        if (empty() || m.empty())
+    typename std::vector<T>::const_iterator cend() const {
+        return elements.cend();
+    }
+
+    bool empty() {
+        return elements.empty();
+    }
+
+    virtual Matrix<T> transpose() {
+        if (this->empty())
             throw empty_matrix();
-        if (_shape[1] != m.shape(0))
-            throw size_mismatch();
 
-        Matrix<T> res(_shape[0], m.shape(1));
-        for (mat_size_t i = 0; i < _shape[0]; ++i)
-            for (mat_size_t k = 0; k < m.shape(1); ++k)
-                for (mat_size_t j = 0; j < _shape[1]; ++j)
-                    res[i][k] += elements[i][j] * m[j][k];
+        Matrix<T> res = Matrix<T>(std::make_pair(n_cols, n_rows));
+        for (mat_size_t i = 0; i < n_rows; ++i)
+            for (mat_size_t j = 0; j < n_cols; ++j)
+                res(j, i) = elements[n_cols*i + j];
         return res;
     }
 
-    virtual Matrix transpose() {
-        if (empty())
+    virtual Matrix<T> operator*(Matrix<T>& mat) {
+        if (this->empty() || mat.empty())
             throw empty_matrix();
+        if (n_cols != mat.shape(0)) {
+            throw size_mismatch();
+        }
 
-        Matrix<T> mT(_shape[1], _shape[0]);
-        for (mat_size_t i = 0; i < _shape[1]; ++i)
-            for (mat_size_t j = 0; j < _shape[0]; ++j)
-                mT[i][j] = elements[j][i];
+        Matrix<T> res = Matrix<T>(std::make_pair(n_rows, mat.shape(1)));
+        for (mat_size_t i = 0; i < n_rows; ++i)
+            for (mat_size_t k = 0; k < mat.shape(1); ++k)
+                for (mat_size_t j = 0; j < n_cols; ++j)
+                    res(i, k) += elements[n_cols*i + j] * mat(j, k);
+        return res;
+    }
 
-        return mT;
+    bool operator==(const Matrix<T>& mat) const {
+        if (n_rows != mat.shape(0) || n_cols != mat.shape(1))
+            return false;
+
+        typename std::vector<T>::const_iterator it1 = this->cbegin();
+        typename std::vector<T>::const_iterator it2 = mat.cbegin();
+        while (it1 != this->cend()) {
+            if (*it1 != *it2)
+                return false;
+            ++it1; ++it2;
+        }
+        return true;
+    }
+
+    mat_size_t shape(mat_size_t n) const{
+        return (n == 0) ? n_rows :
+               (n == 1) ? n_cols :
+               throw bad_shape();
+    }
+
+    std::string to_string() {
+        std::stringstream ss;
+        for (int i = 0; i < n_rows; ++i) {
+            for (int j = 0; j < n_cols; ++j)
+                ss << elements[i * n_cols + j] << "\t";
+            ss << "\n";
+        }
+
+        return ss.str();
     }
 
     struct empty_matrix : public std::exception {
-        const char* what () const throw() final {
-            return "Cannot perform operation on empty matrices";
+        const char* what() const throw() final {
+            return "Cannot perform operation on an empty matrix";
         }
     };
 
     struct size_mismatch : public std::exception {
-        const char* what () const throw() final {
-            return "Incompatible matrix dimensions";
+        const char* what() const throw() final {
+            return "Matrix dimensions do not match";
+        }
+    };
+
+    struct bad_shape : public std::exception {
+        const char* what() const throw() final {
+            return "Requested dimension does not exist";
+        }
+    };
+
+    struct out_of_bounds : public std::exception {
+        const char* what() const throw() final {
+            return "Requested index is out of bounds";
         }
     };
 
 protected:
-    vector2D elements;
-    std::vector<mat_size_t> _shape;
-
-    void setShape() {
-        _shape = std::vector<mat_size_t>(2);
-        if (!empty()) {
-            _shape[0] = elements.size();
-            _shape[1] = elements[0].size();
-        }
-    }
+    mat_size_t n_rows, n_cols;
+    std::vector<T> elements;
 };
 
-template <typename T>
-static std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
-    return os << m.to_string();
-}
-
-#endif //MATRIX_MATRIX_H
+#endif //INCLUDE_MATRIX_H
