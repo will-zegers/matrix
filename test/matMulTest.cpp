@@ -84,20 +84,28 @@ namespace {
         NaiveMatrix<data_t> naive2(mat2);
         EXPECT_EQ(mat1 * mat2, naive1 * naive2);
     }
-//
-//    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive_For_Odd) {
-//        Matrix<data_t> mat1 = randomMatrix((2*dim1-1), (2*dim2-1));
-//        Matrix<data_t> mat2 = randomMatrix((2*dim2-1), (2*dim3-1));
-//        NaiveMatrix<data_t> naive1(mat1);
-//        NaiveMatrix<data_t> naive2(mat2);
-//        EXPECT_EQ(mat1 * mat2, naive1 * naive2);
-//    }
-//
-//    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive_For_All) {
-//        Matrix<data_t> mat1 = randomMatrix(dim1, dim2);
-//        Matrix<data_t> mat2 = randomMatrix(dim2, dim3);
-//        NaiveMatrix<data_t> naive1(mat1);
-//        NaiveMatrix<data_t> naive2(mat2);
-//        EXPECT_EQ(mat1 * mat2, naive1 * naive2);
-//    }
+
+    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive_For_Odd_1) {
+        Matrix<data_t> mat1 = randomMatrix((2*dim1-1), dim2);
+        Matrix<data_t> mat2 = randomMatrix(dim2, 2*dim3);
+        NaiveMatrix<data_t> naive1(mat1);
+        NaiveMatrix<data_t> naive2(mat2);
+        EXPECT_EQ(mat1 * mat2, naive1 * naive2);
+    }
+
+    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive_For_Odd_2) {
+        Matrix<data_t> mat1 = randomMatrix(2*dim1, dim2);
+        Matrix<data_t> mat2 = randomMatrix(dim2, (2*dim3-1));
+        NaiveMatrix<data_t> naive1(mat1);
+        NaiveMatrix<data_t> naive2(mat2);
+        EXPECT_EQ(mat1 * mat2, naive1 * naive2);
+    }
+
+    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive_For_All) {
+        Matrix<data_t> mat1 = randomMatrix(dim1, dim2);
+        Matrix<data_t> mat2 = randomMatrix(dim2, dim3);
+        NaiveMatrix<data_t> naive1(mat1);
+        NaiveMatrix<data_t> naive2(mat2);
+        EXPECT_EQ(mat1 * mat2, naive1 * naive2);
+    }
 }
