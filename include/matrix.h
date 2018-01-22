@@ -8,7 +8,7 @@
 #include <iostream>
 
 #define STEP 2
-#define BLOCK_SZ 4
+#define BLOCK_SZ 32
 
 typedef uint32_t mat_size_t;
 typedef std::tuple<mat_size_t, mat_size_t> shape_t;
@@ -64,51 +64,99 @@ public:
         }
 
         Matrix<T> res = Matrix<T>(std::make_pair(this->n_rows, mat.shape(1)));
-        mat_size_t i;
-        for (i = 0; i < this->n_rows - (STEP - 1); i += STEP) {
+        mat_size_t ii;
+        for (ii = 0; ii + BLOCK_SZ < this->n_rows; ii += BLOCK_SZ) {
             mat_size_t j;
             for (j = 0; j < mat.shape(1) - (STEP - 1); j += STEP) {
+                mat_size_t i;
+                for (i = ii; i < ii + BLOCK_SZ; i += STEP) {
+                    register T acc00 = 0, acc01 = 0, acc10 = 0, acc11 = 0;
+                    for (mat_size_t k = 0; k < this->n_cols; ++k) {
+                        acc00 += elements[n_cols * (i + 0) + k] * mat(k, j + 0);
+                        acc01 += elements[n_cols * (i + 0) + k] * mat(k, j + 1);
+                        acc10 += elements[n_cols * (i + 1) + k] * mat(k, j + 0);
+                        acc11 += elements[n_cols * (i + 1) + k] * mat(k, j + 1);
+                    }  // k
+                    res(i + 0, j + 0) = acc00;
+                    res(i + 0, j + 1) = acc01;
+                    res(i + 1, j + 0) = acc10;
+                    res(i + 1, j + 1) = acc11;
+                }  // i
+                for (; i < ii + BLOCK_SZ; ++i) {
+                    register T acc00 = 0, acc01 = 0;
+                    for (mat_size_t k = 0; k < this->n_cols; ++k) {
+                        acc00 += elements[n_cols * (i + 0) + k] * mat(k, j + 0);
+                        acc01 += elements[n_cols * (i + 0) + k] * mat(k, j + 1);
+                    }  // k
+                    res(i + 0, j + 0) = acc00;
+                    res(i + 0, j + 1) = acc01;
+                }  // i
+            }  // j
+            for (; j < mat.shape(1); ++j) {
+                mat_size_t i;
+                for (i = ii; i < ii + BLOCK_SZ; i += STEP) {
+                    register T acc00 = 0, acc10 = 0;
+                    for (mat_size_t k = 0; k < this->n_cols; ++k) {
+                        acc00 += elements[n_cols*(i + 0) + k] * mat(k, j + 0);
+                        acc10 += elements[n_cols*(i + 1) + k] * mat(k, j + 0);
+                    }  // k
+                    res(i + 0, j + 0) = acc00;
+                    res(i + 1, j + 0) = acc10;
+                }  // i
+                for (; i < ii + BLOCK_SZ; ++i) {
+                    register T acc00 = 0;
+                    for (mat_size_t k = 0; k < this->n_cols; ++k) {
+                        acc00 += elements[n_cols*i + k] * mat(k, j);
+                    }  // k
+                    res(i, j) = acc00;
+                }  //
+            }  // j
+        }  // ii
+        mat_size_t j;
+        for (j = 0; j < mat.shape(1) - (STEP - 1); j += STEP) {
+            mat_size_t i;
+            for (i = ii; i < this->n_rows - (STEP - 1); i += STEP) {
                 register T acc00 = 0, acc01 = 0, acc10 = 0, acc11 = 0;
                 for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                    acc00 += elements[n_cols*(i + 0) + k] * mat(k, j + 0);
-                    acc01 += elements[n_cols*(i + 0) + k] * mat(k, j + 1);
-                    acc10 += elements[n_cols*(i + 1) + k] * mat(k, j + 0);
-                    acc11 += elements[n_cols*(i + 1) + k] * mat(k, j + 1);
+                    acc00 += elements[n_cols * (i + 0) + k] * mat(k, j + 0);
+                    acc01 += elements[n_cols * (i + 0) + k] * mat(k, j + 1);
+                    acc10 += elements[n_cols * (i + 1) + k] * mat(k, j + 0);
+                    acc11 += elements[n_cols * (i + 1) + k] * mat(k, j + 1);
                 }  // k
                 res(i + 0, j + 0) = acc00;
                 res(i + 0, j + 1) = acc01;
                 res(i + 1, j + 0) = acc10;
                 res(i + 1, j + 1) = acc11;
-            }  // j
-            for (; j < mat.shape(1); ++j) {
-                register T acc00 = 0, acc01 = 0, acc10 = 0, acc11 = 0;
+            }  // i
+            for (; i < this->n_rows; ++i) {
+                register T acc00 = 0, acc01 = 0;
+                for (mat_size_t k = 0; k < this->n_cols; ++k) {
+                    acc00 += elements[n_cols * (i + 0) + k] * mat(k, j + 0);
+                    acc01 += elements[n_cols * (i + 0) + k] * mat(k, j + 1);
+                }  // k
+                res(i + 0, j + 0) = acc00;
+                res(i + 0, j + 1) = acc01;
+            }  // i
+        }  // j
+        for (; j < mat.shape(1); ++j) {
+            mat_size_t i;
+            for (i = ii; i < this->n_rows - (STEP - 1); i += STEP) {
+                register T acc00 = 0, acc10 = 0;
                 for (mat_size_t k = 0; k < this->n_cols; ++k) {
                     acc00 += elements[n_cols*(i + 0) + k] * mat(k, j + 0);
                     acc10 += elements[n_cols*(i + 1) + k] * mat(k, j + 0);
                 }  // k
                 res(i + 0, j + 0) = acc00;
                 res(i + 1, j + 0) = acc10;
-            }  // j
-        }  // i
-        for (; i < this->n_rows; ++i) {
-            mat_size_t j;
-            for (j = 0; j < mat.shape(1) - (STEP - 1); j += STEP) {
-                register T acc00 = 0, acc01 = 0;
-                for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                    acc00 += elements[n_cols*(i + 0) + k] * mat(k, j + 0);
-                    acc01 += elements[n_cols*(i + 0) + k] * mat(k, j + 1);
-                }  // k
-                res(i + 0, j + 0) = acc00;
-                res(i + 0, j + 1) = acc01;
-            }  // j
-            for (; j < mat.shape(1); ++j) {
+            }  // i
+            for (; i < this->n_rows; ++i) {
                 register T acc00 = 0;
                 for (mat_size_t k = 0; k < this->n_cols; ++k) {
                     acc00 += elements[n_cols*i + k] * mat(k, j);
                 }  // k
                 res(i, j) = acc00;
-            }  // j
-        }  // i
+            }  //
+        }  // j
 
         return res;
     }

@@ -74,7 +74,7 @@ namespace {
     }
 
     TEST_F(PerformanceTest, MatMul) {
-        dimn = 1024;
+        dimn = 512;
 
         optim1 = randomMatrix(dimn);
         auto start = std::chrono::high_resolution_clock::now();
