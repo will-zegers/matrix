@@ -10,9 +10,10 @@ namespace {
     protected:
         typedef int data_t;
 
-        const int MAX_ROWS = 100;
-        const int MAX_COLS = 100;
-        const int MAX_DATA = 10000;
+        const int MAX_ROWS = 1024;
+        const int MAX_COLS = 1024;
+        const int MIN_DATA = std::numeric_limits<data_t>::min();
+        const int MAX_DATA = std::numeric_limits<data_t>::max();
         mat_size_t dim1, dim2;
 
         std::default_random_engine generator;
@@ -23,7 +24,9 @@ namespace {
         TransposeTest() {
             uniformDim1 = std::uniform_int_distribution<>(1, MAX_ROWS);
             uniformDim2 = std::uniform_int_distribution<>(1, MAX_COLS);
-            uniformData = std::uniform_int_distribution<>(1, MAX_DATA);
+            uniformData = std::uniform_int_distribution<>(MIN_DATA, MAX_DATA);
+
+            generator = std::default_random_engine( (unsigned int)time(0) );
             dim1 = static_cast<mat_size_t>(uniformDim1(generator));
             dim2 = static_cast<mat_size_t>(uniformDim2(generator));
         }

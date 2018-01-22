@@ -70,45 +70,19 @@ public:
             for (j = 0; j < mat.shape(1) - (STEP - 1); j += STEP) {
                 mat_size_t i;
                 for (i = ii; i < ii + BLOCK_SZ; i += STEP) {
-                    register T acc00 = 0, acc01 = 0, acc10 = 0, acc11 = 0;
-                    for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                        acc00 += elements[n_cols * (i + 0) + k] * mat(k, j + 0);
-                        acc01 += elements[n_cols * (i + 0) + k] * mat(k, j + 1);
-                        acc10 += elements[n_cols * (i + 1) + k] * mat(k, j + 0);
-                        acc11 += elements[n_cols * (i + 1) + k] * mat(k, j + 1);
-                    }  // k
-                    res(i + 0, j + 0) = acc00;
-                    res(i + 0, j + 1) = acc01;
-                    res(i + 1, j + 0) = acc10;
-                    res(i + 1, j + 1) = acc11;
+                    this->blockDot2x2(i, j, mat, res);
                 }  // i
                 for (; i < ii + BLOCK_SZ; ++i) {
-                    register T acc00 = 0, acc01 = 0;
-                    for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                        acc00 += elements[n_cols * (i + 0) + k] * mat(k, j + 0);
-                        acc01 += elements[n_cols * (i + 0) + k] * mat(k, j + 1);
-                    }  // k
-                    res(i + 0, j + 0) = acc00;
-                    res(i + 0, j + 1) = acc01;
+                    this->blockDot1x2(i, j, mat, res);
                 }  // i
             }  // j
             for (; j < mat.shape(1); ++j) {
                 mat_size_t i;
                 for (i = ii; i < ii + BLOCK_SZ; i += STEP) {
-                    register T acc00 = 0, acc10 = 0;
-                    for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                        acc00 += elements[n_cols*(i + 0) + k] * mat(k, j + 0);
-                        acc10 += elements[n_cols*(i + 1) + k] * mat(k, j + 0);
-                    }  // k
-                    res(i + 0, j + 0) = acc00;
-                    res(i + 1, j + 0) = acc10;
+                    this->blockDot2x1(i, j, mat, res);
                 }  // i
                 for (; i < ii + BLOCK_SZ; ++i) {
-                    register T acc00 = 0;
-                    for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                        acc00 += elements[n_cols*i + k] * mat(k, j);
-                    }  // k
-                    res(i, j) = acc00;
+                    this->dot(i, j, mat, res);
                 }  //
             }  // j
         }  // ii
@@ -116,45 +90,19 @@ public:
         for (j = 0; j < mat.shape(1) - (STEP - 1); j += STEP) {
             mat_size_t i;
             for (i = ii; i < this->n_rows - (STEP - 1); i += STEP) {
-                register T acc00 = 0, acc01 = 0, acc10 = 0, acc11 = 0;
-                for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                    acc00 += elements[n_cols * (i + 0) + k] * mat(k, j + 0);
-                    acc01 += elements[n_cols * (i + 0) + k] * mat(k, j + 1);
-                    acc10 += elements[n_cols * (i + 1) + k] * mat(k, j + 0);
-                    acc11 += elements[n_cols * (i + 1) + k] * mat(k, j + 1);
-                }  // k
-                res(i + 0, j + 0) = acc00;
-                res(i + 0, j + 1) = acc01;
-                res(i + 1, j + 0) = acc10;
-                res(i + 1, j + 1) = acc11;
+                this->blockDot2x2(i, j, mat, res);
             }  // i
             for (; i < this->n_rows; ++i) {
-                register T acc00 = 0, acc01 = 0;
-                for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                    acc00 += elements[n_cols * (i + 0) + k] * mat(k, j + 0);
-                    acc01 += elements[n_cols * (i + 0) + k] * mat(k, j + 1);
-                }  // k
-                res(i + 0, j + 0) = acc00;
-                res(i + 0, j + 1) = acc01;
+                this->blockDot1x2(i, j, mat, res);
             }  // i
         }  // j
         for (; j < mat.shape(1); ++j) {
             mat_size_t i;
             for (i = ii; i < this->n_rows - (STEP - 1); i += STEP) {
-                register T acc00 = 0, acc10 = 0;
-                for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                    acc00 += elements[n_cols*(i + 0) + k] * mat(k, j + 0);
-                    acc10 += elements[n_cols*(i + 1) + k] * mat(k, j + 0);
-                }  // k
-                res(i + 0, j + 0) = acc00;
-                res(i + 1, j + 0) = acc10;
+                this->blockDot2x1(i, j, mat, res);
             }  // i
             for (; i < this->n_rows; ++i) {
-                register T acc00 = 0;
-                for (mat_size_t k = 0; k < this->n_cols; ++k) {
-                    acc00 += elements[n_cols*i + k] * mat(k, j);
-                }  // k
-                res(i, j) = acc00;
+                this->dot(i, j, mat, res);
             }  //
         }  // j
 
@@ -213,6 +161,48 @@ public:
 protected:
     mat_size_t n_rows, n_cols;
     std::vector<T> elements;
+
+    inline void blockDot2x2(mat_size_t i, mat_size_t j, Matrix<T>& other, Matrix<T>& res) {
+        register T acc00 = 0, acc01 = 0, acc10 = 0, acc11 = 0;
+        for (mat_size_t k = 0; k < this->n_cols; ++k) {
+            acc00 += elements[n_cols * (i + 0) + k] * other(k, j + 0);
+            acc01 += elements[n_cols * (i + 0) + k] * other(k, j + 1);
+            acc10 += elements[n_cols * (i + 1) + k] * other(k, j + 0);
+            acc11 += elements[n_cols * (i + 1) + k] * other(k, j + 1);
+        }  // k
+        res(i + 0, j + 0) = acc00;
+        res(i + 0, j + 1) = acc01;
+        res(i + 1, j + 0) = acc10;
+        res(i + 1, j + 1) = acc11;
+    }
+
+    inline void blockDot1x2(mat_size_t i, mat_size_t j, Matrix<T>& other, Matrix<T>& res) {
+        register T acc00 = 0, acc01 = 0;
+        for (mat_size_t k = 0; k < this->n_cols; ++k) {
+            acc00 += elements[n_cols * (i + 0) + k] * other(k, j + 0);
+            acc01 += elements[n_cols * (i + 0) + k] * other(k, j + 1);
+        }  // k
+        res(i + 0, j + 0) = acc00;
+        res(i + 0, j + 1) = acc01;
+    }
+
+    inline void blockDot2x1(mat_size_t i, mat_size_t j, Matrix<T>& other, Matrix<T>& res) {
+        register T acc00 = 0, acc10 = 0;
+        for (mat_size_t k = 0; k < this->n_cols; ++k) {
+            acc00 += elements[n_cols*(i + 0) + k] * other(k, j + 0);
+            acc10 += elements[n_cols*(i + 1) + k] * other(k, j + 0);
+        }  // k
+        res(i + 0, j + 0) = acc00;
+        res(i + 1, j + 0) = acc10;
+    }
+
+    inline void dot(mat_size_t i, mat_size_t j, Matrix<T>& other, Matrix<T>& res) {
+        register T acc00 = 0;
+        for (mat_size_t k = 0; k < this->n_cols; ++k) {
+            acc00 += elements[n_cols*(i + 0) + k] * other(k, j + 0);
+        }  // k
+        res(i + 0, j + 0) = acc00;
+    }
 };
 
 

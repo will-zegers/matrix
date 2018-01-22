@@ -10,10 +10,11 @@ namespace {
     protected:
         typedef long data_t;
 
-        const int MAX_DIM1 = 100;
-        const int MAX_DIM2 = 100;
-        const int MAX_DIM3 = 100;
-        const int MAX_ELEM = 100;
+        const int MAX_DIM1 = 256;
+        const int MAX_DIM2 = 256;
+        const int MAX_DIM3 = 256;
+        const int MIN_DATA = std::numeric_limits<int>::min();
+        const int MAX_DATA = std::numeric_limits<int>::max();
 
         mat_size_t dim1, dim2, dim3;
 
@@ -24,13 +25,18 @@ namespace {
         std::uniform_int_distribution<> uniformData;
 
         MatMulTest() {
+            srand(time(NULL));
             uniformDim1 = std::uniform_int_distribution<>(1, MAX_DIM1);
             uniformDim2 = std::uniform_int_distribution<>(1, MAX_DIM2);
             uniformDim3 = std::uniform_int_distribution<>(1, MAX_DIM3);
-            uniformData = std::uniform_int_distribution<>(1, MAX_ELEM);
+            uniformData = std::uniform_int_distribution<>(MIN_DATA, MAX_DATA);
+
+            generator = std::default_random_engine( (unsigned int)time(0) );
             dim1 = static_cast<mat_size_t>(uniformDim1(generator));
             dim2 = static_cast<mat_size_t>(uniformDim2(generator));
             dim3 = static_cast<mat_size_t>(uniformDim3(generator));
+            reroll();
+            std::cout << dim1 << " " << dim2 << " " << dim3 << std::endl;
         }
 
         void reroll() {

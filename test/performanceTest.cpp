@@ -25,6 +25,8 @@ namespace {
 
         PerformanceTest() {
             std::cout << std::fixed;
+
+            generator = std::default_random_engine( (unsigned int)time(0) );
             uniformData = std::uniform_int_distribution<>(1, MAX_ELEM);
         }
 
@@ -74,7 +76,7 @@ namespace {
     }
 
     TEST_F(PerformanceTest, MatMul) {
-        dimn = 512;
+        dimn = 1024;
 
         optim1 = randomMatrix(dimn);
         auto start = std::chrono::high_resolution_clock::now();
