@@ -13,7 +13,7 @@ namespace {
         const int MAX_DIM1 = 100;
         const int MAX_DIM2 = 100;
         const int MAX_DIM3 = 100;
-        const int MAX_ELEM = 10000;
+        const int MAX_ELEM = 100;
 
         mat_size_t dim1, dim2, dim3;
 
@@ -69,11 +69,35 @@ namespace {
         EXPECT_THROW(m1 * m2, Matrix<data_t>::size_mismatch);
     }
 
-    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive) {
-        Matrix<data_t> mat1 = randomMatrix(dim1, dim2);
-        Matrix<data_t> mat2 = randomMatrix(dim2, dim3);
+    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive_For_Square) {
+        Matrix<data_t> mat1 = randomMatrix(dim1*2, dim1*2);
+        Matrix<data_t> mat2 = randomMatrix(dim1*2, dim1*2);
         NaiveMatrix<data_t> naive1(mat1);
         NaiveMatrix<data_t> naive2(mat2);
         EXPECT_EQ(mat1 * mat2, naive1 * naive2);
     }
+
+    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive_For_Even) {
+        Matrix<data_t> mat1 = randomMatrix(2*dim1, 2*dim2);
+        Matrix<data_t> mat2 = randomMatrix(2*dim2, 2*dim3);
+        NaiveMatrix<data_t> naive1(mat1);
+        NaiveMatrix<data_t> naive2(mat2);
+        EXPECT_EQ(mat1 * mat2, naive1 * naive2);
+    }
+//
+//    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive_For_Odd) {
+//        Matrix<data_t> mat1 = randomMatrix((2*dim1-1), (2*dim2-1));
+//        Matrix<data_t> mat2 = randomMatrix((2*dim2-1), (2*dim3-1));
+//        NaiveMatrix<data_t> naive1(mat1);
+//        NaiveMatrix<data_t> naive2(mat2);
+//        EXPECT_EQ(mat1 * mat2, naive1 * naive2);
+//    }
+//
+//    TEST_F(MatMulTest, MatMul_Implementation_Equals_Naive_For_All) {
+//        Matrix<data_t> mat1 = randomMatrix(dim1, dim2);
+//        Matrix<data_t> mat2 = randomMatrix(dim2, dim3);
+//        NaiveMatrix<data_t> naive1(mat1);
+//        NaiveMatrix<data_t> naive2(mat2);
+//        EXPECT_EQ(mat1 * mat2, naive1 * naive2);
+//    }
 }

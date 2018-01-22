@@ -85,11 +85,4 @@ namespace {
         m(i, j) = elem;
         EXPECT_EQ(elem, m(i, j));
     }
-
-    TEST_F(MatrixInstantiation, Accessing_Beyond_Dims_Throw_OOB) {
-        Matrix<data_t> m = Matrix<data_t>(std::make_pair(dim1, dim2));
-        EXPECT_THROW(m(dim1, dim2-1), Matrix<data_t>::out_of_bounds);
-        EXPECT_THROW(m(dim1-1, dim2), Matrix<data_t>::out_of_bounds);
-        EXPECT_THROW(m(dim1, dim2), Matrix<data_t>::out_of_bounds);
-    }
 }

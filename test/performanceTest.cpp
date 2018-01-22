@@ -11,7 +11,7 @@ namespace {
     class PerformanceTest : public ::testing::Test {
 
     protected:
-        typedef int data_t;
+        typedef float data_t;
 
         const int MAX_ELEM = 10000;
 
@@ -74,7 +74,7 @@ namespace {
     }
 
     TEST_F(PerformanceTest, MatMul) {
-        dimn = 256;
+        dimn = 1024;
 
         optim1 = randomMatrix(dimn);
         auto start = std::chrono::high_resolution_clock::now();

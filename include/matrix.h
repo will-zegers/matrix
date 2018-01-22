@@ -6,6 +6,8 @@
 #include <sstream>
 #include <tuple>
 
+#define BLOCK_SZ 4
+
 typedef uint32_t mat_size_t;
 typedef std::tuple<mat_size_t, mat_size_t> shape_t;
 
@@ -23,8 +25,9 @@ public:
             elements(elements) {}
 
     T& operator()(mat_size_t i, mat_size_t j) {
-        if (i >= n_rows || j >= n_cols)
-            throw out_of_bounds();
+        return elements[i * n_cols + j];
+    }
+    T& operator()(mat_size_t i, mat_size_t j) const {
         return elements[i * n_cols + j];
     }
 
@@ -54,15 +57,34 @@ public:
     virtual Matrix<T> operator*(Matrix<T>& mat) {
         if (this->empty() || mat.empty())
             throw empty_matrix();
-        if (n_cols != mat.shape(0)) {
+        if (this->n_cols != mat.shape(0)) {
             throw size_mismatch();
         }
 
-        Matrix<T> res = Matrix<T>(std::make_pair(n_rows, mat.shape(1)));
-        for (mat_size_t i = 0; i < n_rows; ++i)
-            for (mat_size_t k = 0; k < mat.shape(1); ++k)
-                for (mat_size_t j = 0; j < n_cols; ++j)
-                    res(i, k) += elements[n_cols*i + j] * mat(j, k);
+        Matrix<T> res = Matrix<T>(std::make_pair(this->n_rows, mat.shape(1)));
+        mat_size_t ib = 64;
+        for (mat_size_t ii = 0; ii < this->n_rows; ii += BLOCK_SZ)
+            for (mat_size_t j = 0; j < mat.shape(1); j += 4)
+                for (mat_size_t i = ii; i < ii + BLOCK_SZ; i += 4) {
+                    register T acc00 = 0, acc10 = 0, acc20 = 0, acc30 = 0;
+                    register T acc01 = 0, acc11 = 0, acc21 = 0, acc31 = 0;
+                    register T acc02 = 0, acc12 = 0, acc22 = 0, acc32 = 0;
+                    register T acc03 = 0, acc13 = 0, acc23 = 0, acc33 = 0;
+                for (mat_size_t k = 0; k < this->n_cols; ++k) {
+                    acc00 += mat(k,j+0)*elements[n_cols*(i+0) + k]; acc01 += mat(k,j+0)*elements[n_cols*(i+1) + k];
+                    acc02 += mat(k,j+0)*elements[n_cols*(i+2) + k]; acc03 += mat(k,j+0)*elements[n_cols*(i+3) + k];
+                    acc10 += mat(k,j+1)*elements[n_cols*(i+0) + k]; acc11 += mat(k,j+1)*elements[n_cols*(i+1) + k];
+                    acc12 += mat(k,j+1)*elements[n_cols*(i+2) + k]; acc13 += mat(k,j+1)*elements[n_cols*(i+3) + k];
+                    acc20 += mat(k,j+2)*elements[n_cols*(i+0) + k]; acc21 += mat(k,j+2)*elements[n_cols*(i+1) + k];
+                    acc22 += mat(k,j+2)*elements[n_cols*(i+2) + k]; acc23 += mat(k,j+2)*elements[n_cols*(i+3) + k];
+                    acc30 += mat(k,j+3)*elements[n_cols*(i+0) + k]; acc31 += mat(k,j+3)*elements[n_cols*(i+1) + k];
+                    acc32 += mat(k,j+3)*elements[n_cols*(i+2) + k]; acc33 += mat(k,j+3)*elements[n_cols*(i+3) + k];
+                }
+                res(i+0, j+0) = acc00; res(i+0, j+1) = acc01; res(i+0, j+2) = acc02; res(i+0, j+3) = acc03;
+                res(i+1, j+0) = acc10; res(i+1, j+1) = acc11; res(i+1, j+2) = acc12; res(i+1, j+3) = acc13;
+                res(i+2, j+0) = acc20; res(i+2, j+1) = acc21; res(i+2, j+2) = acc22; res(i+2, j+3) = acc23;
+                res(i+3, j+0) = acc30; res(i+3, j+1) = acc31; res(i+3, j+2) = acc32; res(i+3, j+3) = acc33;
+            }
         return res;
     }
 
@@ -115,15 +137,11 @@ public:
         }
     };
 
-    struct out_of_bounds : public std::exception {
-        const char* what() const throw() final {
-            return "Requested index is out of bounds";
-        }
-    };
-
 protected:
     mat_size_t n_rows, n_cols;
     std::vector<T> elements;
 };
+
+
 
 #endif //INCLUDE_MATRIX_H
