@@ -14,10 +14,10 @@ add_executable(main main.cpp include/matrix.h)
 add_executable(
         testAll
         test/include/naiveMatrix.h
-        test/performanceTest.cpp)
-#        test/matMulTest.cpp
-#        test/transposeTest.cpp
-#        test/instantiationTest.cpp)
+        test/performanceTest.cpp
+        test/matMulTest.cpp
+        test/transposeTest.cpp
+        test/instantiationTest.cpp)
 target_link_libraries(testAll gtest gtest_main)
 
 #SET(CMAKE_CXX_FLAGS "-O0")
