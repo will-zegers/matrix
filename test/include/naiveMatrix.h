@@ -3,6 +3,11 @@
 
 #include "matrix.h"
 
+/**
+ * NaiveMatrix is derived from the base Matrix class, but uses vanilla versions of transpose and matrix multiplication.
+ * Useful both for testing the correctness of new Matrix features, and for getting an idea of the performance of
+ * different optimizations versus their vanilla counterparts (i.e. matrix multiplication.)
+ */
 template <typename T>
 class NaiveMatrix : public Matrix<T> {
 public:

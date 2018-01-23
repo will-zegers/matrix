@@ -269,13 +269,12 @@ protected:
     std::vector<T> elements;
 
     /**
-     * Computes the dot product over NxN blocks of elements of two matrices
      *
-     * @param i Current index of i in the matrix multiplication operation
-     * @param j Current index of j in the matrix multiplication operation
-     * @param kk Current index of kk in the matrix multiplication operation
-     * @param other An instance of the multiplicand(?) Matrix
-     * @param res The result which into which the dot product will be stored
+     * @param i Current index of i in the matrix multiplcation operation
+     * @param j Current index of j in the matrix multiplcation operation
+     * @param kk Current index of kk in the matrix multiplcation operation
+     * @param other 
+     * @param res
      */
     inline void blockDotNxN(mat_size_t i, mat_size_t j, mat_size_t kk, Matrix<T> &other, Matrix<T> &res) {
         register T acc00, acc10, acc20, acc30, acc40, acc50, acc60, acc70;
@@ -485,16 +484,6 @@ protected:
         res(i + 7, j + 7) = acc77;
     }
 
-    /**
-     * Computes the dot product over Nx1 blocks of elements of two matrices. Mainly used to clean up the last few
-     * columns along a block of multilpications that don't align with the block.
-     *
-     * @param i Current index of i in the matrix multiplcation operation
-     * @param j Current index of j in the matrix multiplcation operation
-     * @param kk Current index of kk in the matrix multiplcation operation
-     * @param other An instance of the multiplicand(?) Matrix
-     * @param res The result which into which the dot product will be stored
-     */
     inline void blockDotNx1(mat_size_t i, mat_size_t j, mat_size_t kk, Matrix<T> &other, Matrix<T> &res) {
         register T acc00, acc10, acc20, acc30, acc40, acc50, acc60, acc70;
 
@@ -528,16 +517,6 @@ protected:
         res(i + 7, j + 0) = acc70;
     }
 
-    /**
-     * Computes the dot product over Nx1 blocks of elements of two matrices. Mainly used to clean up the last few
-     * rows along a block of multiplications that don't align with the block.
-     *
-     * @param i Current index of i in the matrix multiplication operation
-     * @param j Current index of j in the matrix multiplication operation
-     * @param kk Current index of kk in the matrix multiplication operation
-     * @param other An instance of the multiplicand(?) Matrix
-     * @param res The result which into which the dot product will be stored
-     */
     inline void blockDot1xN(mat_size_t i, mat_size_t j, mat_size_t kk, Matrix<T> &other, Matrix<T> &res) {
         register T acc00, acc01, acc02, acc03, acc04, acc05, acc06, acc07;
 
@@ -571,16 +550,6 @@ protected:
         res(i + 0, j + 7) = acc07;
     }
 
-    /**
-     * Computes just the ordinary dot product. Used to clean up the last few elements that well outside the row and cell
-     * blocks.
-     *
-     * @param i Current index of i in the matrix multiplication operation
-     * @param j Current index of j in the matrix multiplication operation
-     * @param kk Current index of kk in the matrix multiplication operation
-     * @param other An instance of the multiplicand(?) Matrix
-     * @param res The result which into which the dot product will be stored
-     */
     inline void dot(mat_size_t i, mat_size_t j, mat_size_t kk, Matrix<T>& other, Matrix<T>& res) {
         register T acc00 = 0;
 

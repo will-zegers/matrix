@@ -14,7 +14,7 @@ namespace {
         typedef float data_t;
 
         mat_size_t dim1, dim2;
-        std::chrono::duration<double, std::milli> duration;
+        std::chrono::duration<double, std::milli> optimDuration, naiveDuration;
         Matrix<data_t> optim1;
         NaiveMatrix<data_t> naive1;
 
@@ -60,15 +60,17 @@ namespace {
         auto start = std::chrono::high_resolution_clock::now();
         transposeWrapper(optim1);
         auto end = std::chrono::high_resolution_clock::now();
-        duration = end - start;
-        std::cout << "[Optimized ] " << duration.count() << std::endl;
+        optimDuration = end - start;
 
         naive1 = NaiveMatrix<data_t>(optim1);
         start = std::chrono::high_resolution_clock::now();
         transposeWrapper(naive1);
         end = std::chrono::high_resolution_clock::now();
-        duration = end - start;
-        std::cout << "[Naive     ] " << duration.count() << std::endl;
+        naiveDuration = end - start;
+        std::cout << "[Naive     ] " << naiveDuration.count() << std::endl;
+        std::cout << "[Optimized ] " << optimDuration.count() << std::endl;
+
+        std::cout << "[Improvemt.] " << (naiveDuration.count() / optimDuration.count() - 1) * 100 << " %" << std::endl;
 
         SUCCEED();
     }
@@ -80,15 +82,17 @@ namespace {
         auto start = std::chrono::high_resolution_clock::now();
         matMulWrapper(optim1);
         auto end = std::chrono::high_resolution_clock::now();
-        duration = end - start;
-        std::cout << "[Optimized ] " << duration.count() << std::endl;
+        optimDuration = end - start;
 
-//        naive1 = NaiveMatrix<data_t>(optim1);
-//        start = std::chrono::high_resolution_clock::now();
-//        matMulWrapper(naive1);
-//        end = std::chrono::high_resolution_clock::now();
-//        duration = end - start;
-//        std::cout << "[Naive     ] " << duration.count() << std::endl;
+        naive1 = NaiveMatrix<data_t>(optim1);
+        start = std::chrono::high_resolution_clock::now();
+        matMulWrapper(naive1);
+        end = std::chrono::high_resolution_clock::now();
+        naiveDuration = end - start;
+
+        std::cout << "[Naive     ] " << naiveDuration.count() << std::endl;
+        std::cout << "[Optimized ] " << optimDuration.count() << std::endl;
+        std::cout << "[Improvemt.] " << (naiveDuration.count() / optimDuration.count() - 1) * 100 << " %" << std::endl;
 
         SUCCEED();
     }

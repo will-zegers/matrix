@@ -9,8 +9,6 @@ include_directories(googletest/include googletest)
 
 add_subdirectory(test/googletest)
 
-add_executable(main main.cpp include/matrix.h)
-
 add_executable(
         testAll
         test/include/naiveMatrix.h
@@ -19,6 +17,3 @@ add_executable(
         test/transposeTest.cpp
         test/instantiationTest.cpp)
 target_link_libraries(testAll gtest gtest_main)
-
-#SET(CMAKE_CXX_FLAGS "-O0")
-#SET(CMAKE_C_FLAGS "-O0")
