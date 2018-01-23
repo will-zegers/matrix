@@ -56,6 +56,8 @@ namespace {
     TEST_F(PerformanceTest, Transpose) {
         dim1 = 4096, dim2 = 4096;
 
+        std::cout << "[Info      ] " << "Testing transpose performance on size " << dim1 << " x " << dim2 << std::endl;
+
         optim1 = randomMatrix(dim1, dim2);
         auto start = std::chrono::high_resolution_clock::now();
         transposeWrapper(optim1);
@@ -67,9 +69,9 @@ namespace {
         transposeWrapper(naive1);
         end = std::chrono::high_resolution_clock::now();
         naiveDuration = end - start;
+
         std::cout << "[Naive     ] " << naiveDuration.count() << std::endl;
         std::cout << "[Optimized ] " << optimDuration.count() << std::endl;
-
         std::cout << "[Improvemt.] " << (naiveDuration.count() / optimDuration.count() - 1) * 100 << " %" << std::endl;
 
         SUCCEED();
@@ -78,6 +80,7 @@ namespace {
     TEST_F(PerformanceTest, MatMul) {
         dim1 = 1024, dim2 = 1024;
 
+        std::cout << "[Info      ] " << "Testing matmul performance on size " << dim1 << " x " << dim2 << std::endl;
         optim1 = randomMatrix(dim1, dim2);
         auto start = std::chrono::high_resolution_clock::now();
         matMulWrapper(optim1);
