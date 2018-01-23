@@ -13,28 +13,26 @@ namespace {
     protected:
         typedef float data_t;
 
-        const int MAX_ELEM = 10000;
-
-        mat_size_t dimn;
+        mat_size_t dim1, dim2;
         std::chrono::duration<double, std::milli> duration;
         Matrix<data_t> optim1;
         NaiveMatrix<data_t> naive1;
 
         std::default_random_engine generator;
-        std::uniform_int_distribution<> uniformData;
+        std::uniform_real_distribution<> uniformData;
 
         PerformanceTest() {
             std::cout << std::fixed;
 
             generator = std::default_random_engine( (unsigned int)time(0) );
-            uniformData = std::uniform_int_distribution<>(1, MAX_ELEM);
+            uniformData = std::uniform_real_distribution<>(0, 1);
         }
 
-        Matrix<data_t> randomMatrix(mat_size_t dimn) {
-            Matrix<data_t> m = Matrix<data_t>(std::make_pair(dimn, dimn));
-            for (mat_size_t i = 0; i < dimn; ++i)
-                for (mat_size_t j = 0; j < dimn; ++j)
-                    m(i, j) = uniformData(generator);
+        Matrix<data_t> randomMatrix(mat_size_t dim1, mat_size_t dim2) {
+            Matrix<data_t> m = Matrix<data_t>(std::make_pair(dim1, dim2));
+            for (mat_size_t i = 0; i < dim1; ++i)
+                for (mat_size_t j = 0; j < dim2; ++j)
+                    m(i, j) = static_cast<data_t>(uniformData(generator));
             return m;
         }
 
@@ -56,9 +54,9 @@ namespace {
     };
 
     TEST_F(PerformanceTest, Transpose) {
-        dimn = 4096;
+        dim1 = 4096, dim2 = 4096;
 
-        optim1 = randomMatrix(dimn);
+        optim1 = randomMatrix(dim1, dim2);
         auto start = std::chrono::high_resolution_clock::now();
         transposeWrapper(optim1);
         auto end = std::chrono::high_resolution_clock::now();
@@ -76,9 +74,9 @@ namespace {
     }
 
     TEST_F(PerformanceTest, MatMul) {
-        dimn = 256;
+        dim1 = 1024, dim2 = 1024;
 
-        optim1 = randomMatrix(dimn);
+        optim1 = randomMatrix(dim1, dim2);
         auto start = std::chrono::high_resolution_clock::now();
         matMulWrapper(optim1);
         auto end = std::chrono::high_resolution_clock::now();
