@@ -83,12 +83,12 @@ namespace {
         duration = end - start;
         std::cout << "[Optimized ] " << duration.count() << std::endl;
 
-        naive1 = NaiveMatrix<data_t>(optim1);
-        start = std::chrono::high_resolution_clock::now();
-        matMulWrapper(naive1);
-        end = std::chrono::high_resolution_clock::now();
-        duration = end - start;
-        std::cout << "[Naive     ] " << duration.count() << std::endl;
+//        naive1 = NaiveMatrix<data_t>(optim1);
+//        start = std::chrono::high_resolution_clock::now();
+//        matMulWrapper(naive1);
+//        end = std::chrono::high_resolution_clock::now();
+//        duration = end - start;
+//        std::cout << "[Naive     ] " << duration.count() << std::endl;
 
         SUCCEED();
     }

@@ -36,7 +36,6 @@ namespace {
             dim2 = static_cast<mat_size_t>(uniformDim2(generator));
             dim3 = static_cast<mat_size_t>(uniformDim3(generator));
             reroll();
-            std::cout << dim1 << " " << dim2 << " " << dim3 << std::endl;
         }
 
         void reroll() {
